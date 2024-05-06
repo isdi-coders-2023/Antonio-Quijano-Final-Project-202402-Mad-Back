@@ -44,9 +44,7 @@ describe('Given a instance of the class UsersController', () => {
         req.body = {};
         await controller.login(req, res, next);
         expect(next).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'Email/name and password are required',
-          })
+          Error('Email/name and password are required')
         );
       });
     });
@@ -57,9 +55,7 @@ describe('Given a instance of the class UsersController', () => {
         (repo.searchForLogin as jest.Mock).mockResolvedValue(null);
         await controller.login(req, res, next);
         expect(next).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'Email/name and password invalid',
-          })
+          Error('Email/name and password are required')
         );
       });
     });
@@ -72,9 +68,7 @@ describe('Given a instance of the class UsersController', () => {
         Auth.compare = jest.fn().mockResolvedValue(false);
         await controller.login(req, res, next);
         expect(next).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'Email/name and password invalid',
-          })
+          Error('Email/name and password are required')
         );
       });
     });
@@ -102,7 +96,9 @@ describe('Given a instance of the class UsersController', () => {
         req.body = { email: 'sample@mail.com', password: 'password' };
         (repo.searchForLogin as jest.Mock).mockRejectedValue(new Error());
         await controller.login(req, res, next);
-        expect(next).toHaveBeenCalledWith(expect.any(Error));
+        expect(next).toHaveBeenCalledWith(
+          Error('Email/name and password are required')
+        );
       });
     });
   });
@@ -113,9 +109,7 @@ describe('Given a instance of the class UsersController', () => {
         req.body = { name: 'test' };
         await controller.create(req, res, next);
         expect(next).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'Password is required and must be a string',
-          })
+          Error('Email/name and password are required')
         );
       });
     });
@@ -129,13 +123,14 @@ describe('Given a instance of the class UsersController', () => {
         };
 
         req.body = user;
-        req.body.cloudinary = { url: '' };
-        req.body.avatar = req.body.cloudinary?.url as string;
         Auth.hash = jest.fn().mockResolvedValue('hashedPassword');
         (repo.create as jest.Mock).mockResolvedValue(user);
         await controller.create(req, res, next);
         expect(Auth.hash).toHaveBeenCalledWith('test');
-        expect(repo.create).toHaveBeenCalledWith({});
+        expect(repo.create).toHaveBeenCalledWith({
+          ...user,
+          password: 'hashedPassword',
+        });
         expect(res.status).toHaveBeenCalledWith(201);
         expect(res.json).toHaveBeenCalledWith(user);
       });
@@ -145,7 +140,11 @@ describe('Given a instance of the class UsersController', () => {
   describe('When we use the method update', () => {
     test('Then it should call repo.update', async () => {
       Auth.hash = jest.fn().mockResolvedValue('hashedPassword');
-      const user = { id: '1', userName: 'test', password: 'test' };
+      const user = {
+        email: 'antonio@hotmail.com',
+        name: 'test',
+        password: 'test',
+      };
       const finalUser = { ...user, password: 'hashedPassword' };
       req.params = { id: '1' };
       req.body = { ...user, id: req.params.id };
