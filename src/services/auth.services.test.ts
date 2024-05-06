@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { hash, compare } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Auth } from './auth.service';
@@ -23,7 +22,7 @@ describe('Given the "static" class Auth', () => {
   describe('When we use the static method signJwt', () => {
     test('Then it should call sign from jwt', () => {
       Auth.secret = 'test secret';
-      Auth.signJwt({ id: 'test', role: 'test' });
+      Auth.signJwt({ id: 'test', role: 'user' });
       expect(jwt.sign).toHaveBeenCalled();
     });
   });
@@ -32,7 +31,11 @@ describe('Given the "static" class Auth', () => {
     describe('And there are not secret in process.env', () => {
       test('Then it should call sign from jwt', () => {
         Auth.secret = '';
-        const result = () => Auth.signJwt({ id: 'test', role: 'test' });
+        const result = () =>
+          Auth.signJwt({
+            id: 'test',
+            role: '',
+          });
         expect(result).toThrow();
       });
     });

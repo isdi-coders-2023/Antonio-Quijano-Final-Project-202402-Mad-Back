@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { type UserSqlRepository } from '../repositories/users.repo';
 import { type Request, type Response, type NextFunction } from 'express';
 import createDebug from 'debug';
 import { type UserCreateDto } from '../entities/user';
-import { HttpError } from '../middleware/errors.middlewares';
-import { Auth } from '../services/auth.service';
+import { HttpError } from '../middleware/errors.middlewares.js';
+import { Auth } from '../services/auth.service.js';
 import debug from 'debug';
 import {
   userCreateDtoSchema,
   userUpdateDtoSchema,
-} from '../entities/users.entities.schema';
+} from '../entities/users.entities.schema.js';
 
 export class UserController {
   constructor(private readonly repo: UserSqlRepository) {
@@ -122,17 +122,23 @@ export class UserController {
       data.password = await Auth.hash(data.password);
     }
 
-    const { error } = userUpdateDtoSchema.validate(data, {
+    const updatedUser = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    };
+
+    const { error } = userUpdateDtoSchema.validate(updatedUser, {
       abortEarly: false,
     });
 
     if (error) {
-      next(new HttpError(406, 'Not Acceptable', error.message));
+      next(new HttpError(406, 'Not Acceptable***', error.message));
       return;
     }
 
     try {
-      const result = await this.repo.update(id, data);
+      const result = await this.repo.update(id, updatedUser);
       res.status(202);
       res.json(result);
     } catch (error) {

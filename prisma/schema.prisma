@@ -51,6 +51,7 @@ model Album  {
   price             Int
   genre             Genre
   recordCompany     String
+  stock             Int
   producer          String
   moreInfo          String
 
