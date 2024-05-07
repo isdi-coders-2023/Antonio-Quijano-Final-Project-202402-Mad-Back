@@ -16,6 +16,7 @@ const config = {
   // An array of regexp pattern strings used to skip coverage collection
   coveragePathIgnorePatterns: [
     'index.ts',
+    'app.ts',
     'entities',
     'interface',
     'tools',

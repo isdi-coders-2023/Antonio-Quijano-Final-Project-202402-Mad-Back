@@ -1,7 +1,11 @@
+import { type Purchase } from './purchase';
+import { type User } from './user';
+
 export type Album = {
   id: string;
   artist: string;
   album: string;
+  stock: number;
   duration: string;
   cover: string;
   price: number;
@@ -25,6 +29,7 @@ export type AlbumCreateDto = {
   id: string;
   artist: string;
   album: string;
+  stock: number;
   duration: string;
   cover: string;
   price: number;
