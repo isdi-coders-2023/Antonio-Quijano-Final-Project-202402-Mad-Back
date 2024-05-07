@@ -93,7 +93,7 @@ describe('Given a instance of the class UsersController', () => {
 
     describe('And an error is thrown', () => {
       test('Then it should call next with an error', async () => {
-        req.body = { email: 'sample@mail.com', password: 'password' };
+        req.body = { email: 'sample@hotmail.com', password: 'password' };
         (repo.searchForLogin as jest.Mock).mockRejectedValue(new Error());
         await controller.login(req, res, next);
         expect(next).toHaveBeenCalledWith(
